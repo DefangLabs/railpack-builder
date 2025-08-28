@@ -9,6 +9,9 @@ jobs:
     env:
       GCP_PROJECT: defang-io
       GCP_REGION: us-central1
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     environment: release
     steps:
