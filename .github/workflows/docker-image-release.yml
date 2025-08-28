@@ -31,3 +31,39 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: defangio/railpack-builder:latest
+
+      # - name: Install ECR helper
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y amazon-ecr-credential-helper
+
+      # - name: Use ECR credential helper
+      #   run: |
+      #     mkdir -p /root/.docker
+      #     echo '{"credsStore": "ecr-login"}' > /root/.docker/config.json
+
+      # - name: Configure AWS Credentials for CI
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-region: us-west-2
+      #     role-to-assume: arn:aws:iam::488659951590:role/ci-role-d4fe904 # ciRoleArn from defang-io/infrastructure stack
+
+      # - name: Push image to public ECR gallery
+      #   run: |
+      #     docker tag railpack-builder:latest 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
+      #     docker push 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
+
+      - name: Authenticate to GCR
+        run: |
+          gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
+
+      - name: Configure GCP Credentials for Shared Services
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: "defang-io"
+          workload_identity_provider: "projects/806289336876/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
+
+      - name: Push image to public GCR
+        run: |
+          docker tag railpack-builder:latest gcr.io/defang-io/railpack-builder:latest
+          docker push gcr.io/defang-io/railpack-builder:latest
