@@ -6,6 +6,9 @@ on:
 
 jobs:
   build:
+    env:
+      GCP_PROJECT: defang-io
+      GCP_REGION: us-central1
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -56,15 +59,15 @@ jobs:
       #     docker tag railpack-builder:latest 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
       #     docker push 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
 
-      - name: Authenticate to GCR
-        run: |
-          gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
-
       - name: Configure GCP Credentials for Shared Services
         uses: "google-github-actions/auth@v2"
         with:
-          project_id: "defang-io"
+          project_id: ${{ env.GCP_PROJECT}}
           workload_identity_provider: "projects/806289336876/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
+
+      - name: Authenticate to GCR
+        run: |
+          gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
 
       - name: Push image to public GCR
         run: |
