@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     env:
-      AWS_REGION: us-east-1
       GCP_PROJECT: defang-io
       GCP_REGION: us-central1
       IMAGE_TAG: latest
@@ -28,7 +27,7 @@ jobs:
       - name: Configure AWS Credentials for Staging
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
           role-to-assume: arn:aws:iam::426819183542:role/admin # adminUserRoleArn from defang-io/bootstrap stack
           role-duration-seconds: 1200
           role-chaining: true
