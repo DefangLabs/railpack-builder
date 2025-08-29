@@ -38,8 +38,8 @@ jobs:
 
       - name: Use ECR credential helper
         run: |
-          mkdir -p /root/.docker
-          echo '{"credHelpers": {"public.ecr.aws": "ecr-login"}}' > /root/.docker/config.json
+          mkdir -p ~/.docker
+          echo '{"credHelpers": {"public.ecr.aws": "ecr-login"}}' > ~/.docker/config.json
 
       - name: Configure AWS Credentials for CI
         uses: aws-actions/configure-aws-credentials@v4
