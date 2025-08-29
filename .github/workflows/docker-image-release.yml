@@ -4,8 +4,29 @@ on:
   push:
     branches: ["main"]
 
+env:
+  RAILPACK_VERSION: "0.4.0"
+
 jobs:
-  build:
+  build-arm:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push multi-arch Docker image
+        uses: docker/build-push-action@v6
+        with:
+          build-args: |
+            RAILPACK_VERSION=${{ env.RAILPACK_VERSION }}
+          file: Dockerfile
+          platforms: linux/arm64
+          push: false
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+
+  build-push:
+    needs: build-arm
     env:
       GCP_PROJECT: defang-io
       GCP_REGION: us-central1
@@ -40,8 +61,8 @@ jobs:
         with:
           registry-type: public
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -67,13 +88,14 @@ jobs:
         with:
           context: .
           build-args: |
-            RAILPACK_VERSION=0.4.0
+            RAILPACK_VERSION=${{ env.RAILPACK_VERSION }}
           file: Dockerfile
           platforms: linux/amd64
           # platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             defangio/railpack-builder:${{ env.IMAGE_TAG }}
+            ${{ env.GCP_REGION }}-docker.pkg.dev/defang-io/public/railpack-builder:${{ env.IMAGE_TAG }}
             public.ecr.aws/defang-io/codebuild-railpack:${{ env.IMAGE_TAG }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }},mode=max
