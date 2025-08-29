@@ -72,7 +72,7 @@ jobs:
           push: true
           tags: |
             defangio/railpack-builder:${{ env.IMAGE_TAG }}
-            gcr.io/defang-io/public/railpack-builder:${{ env.IMAGE_TAG }}
+            ${{ env.GCP_REGION }}-docker.pkg.dev/defang-io/public/railpack-builder:${{ env.IMAGE_TAG }}
             public.ecr.aws/defang-io/codebuild-railpack:${{ env.IMAGE_TAG }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }},mode=max
