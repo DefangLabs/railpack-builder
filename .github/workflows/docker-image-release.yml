@@ -19,16 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install ECR helper
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y amazon-ecr-credential-helper
-
-      - name: Use ECR credential helper
-        run: |
-          mkdir -p ~/.docker
-          echo '{"credHelpers": {"public.ecr.aws": "ecr-login"}}' > ~/.docker/config.json
-
       - name: Configure AWS Credentials for CI
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -43,15 +33,11 @@ jobs:
           role-duration-seconds: 1200
           role-chaining: true
 
-      - name: Configure GCP Credentials for Shared Services
-        uses: "google-github-actions/auth@v2"
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v2
         with:
-          project_id: ${{ env.GCP_PROJECT}}
-          workload_identity_provider: "projects/806289336876/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
-
-      - name: Authenticate to GCR
-        run: |
-          gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
+          registry-type: public
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -64,6 +50,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configure GCP Credentials for Shared Services
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: ${{ env.GCP_PROJECT}}
+          workload_identity_provider: "projects/806289336876/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
+
+      - name: Authenticate to GCR
+        run: |
+          gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
 
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
