@@ -77,5 +77,5 @@ jobs:
 
       - name: Push image to public GCR
         run: |
-          docker tag railpack-builder:${IMAGE_TAG} gcr.io/defang-io/public/railpack-builder:${IMAGE_TAG}
+          docker tag defangio/railpack-builder:${IMAGE_TAG} gcr.io/defang-io/public/railpack-builder:${IMAGE_TAG}
           docker push gcr.io/defang-io/public/railpack-builder:${IMAGE_TAG}
