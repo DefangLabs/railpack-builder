@@ -9,6 +9,7 @@ jobs:
     env:
       GCP_PROJECT: defang-io
       GCP_REGION: us-central1
+      IMAGE_TAG: latest
     permissions:
       contents: read
       id-token: write
@@ -39,7 +40,9 @@ jobs:
           platforms: linux/amd64
           # platforms: linux/amd64,linux/arm64
           push: true
-          tags: defangio/railpack-builder:latest
+          tags: defangio/railpack-builder:${{ env.IMAGE_TAG }}
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,scope=${{ github.workflow }},mode=max
 
       # - name: Install ECR helper
       #   run: |
@@ -59,8 +62,8 @@ jobs:
 
       # - name: Push image to public ECR gallery
       #   run: |
-      #     docker tag railpack-builder:latest 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
-      #     docker push 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:latest
+      #     docker tag railpack-builder:${IMAGE_TAG} 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:${IMAGE_TAG}
+      #     docker push 488659951590.dkr.ecr.us-west-2.amazonaws.com/railpack-builder:${IMAGE_TAG}
 
       - name: Configure GCP Credentials for Shared Services
         uses: "google-github-actions/auth@v2"
@@ -74,5 +77,5 @@ jobs:
 
       - name: Push image to public GCR
         run: |
-          docker tag railpack-builder:latest gcr.io/defang-io/railpack-builder:latest
-          docker push gcr.io/defang-io/railpack-builder:latest
+          docker tag railpack-builder:${IMAGE_TAG} gcr.io/defang-io/public/railpack-builder:${IMAGE_TAG}
+          docker push gcr.io/defang-io/public/railpack-builder:${IMAGE_TAG}
