@@ -75,7 +75,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           project_id: ${{ env.GCP_PROJECT}}
-          workload_identity_provider: "projects/defang-io/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
+          workload_identity_provider: "projects/806289336876/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider"
 
       - name: Authenticate to GCR
         run: |
