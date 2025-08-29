@@ -5,7 +5,8 @@ on:
     branches: ["main"]
 
 env:
-  RAILPACK_VERSION: "0.4.0"
+  BUILD_ARGS: |
+    RAILPACK_VERSION=0.4.0
 
 jobs:
   build-arm:
@@ -17,8 +18,7 @@ jobs:
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
         with:
-          build-args: |
-            RAILPACK_VERSION=${{ env.RAILPACK_VERSION }}
+          build-args: ${{ env.BUILD_ARGS }}
           file: Dockerfile
           platforms: linux/arm64
           push: false
@@ -36,8 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     steps:
-      - uses: actions/checkout@v4
-
       - name: Set IMAGE_TAG
         run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
 
@@ -61,8 +59,8 @@ jobs:
         with:
           registry-type: public
 
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -86,16 +84,12 @@ jobs:
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          build-args: |
-            RAILPACK_VERSION=${{ env.RAILPACK_VERSION }}
+          build-args: ${{ env.BUILD_ARGS }}
           file: Dockerfile
-          platforms: linux/amd64
-          # platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             defangio/railpack-builder:${{ env.IMAGE_TAG }}
-            ${{ env.GCP_REGION }}-docker.pkg.dev/defang-io/public/railpack-builder:${{ env.IMAGE_TAG }}
             public.ecr.aws/defang-io/codebuild-railpack:${{ env.IMAGE_TAG }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }},mode=max
