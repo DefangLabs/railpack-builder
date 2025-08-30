@@ -81,8 +81,8 @@ jobs:
 
       - name: Authenticate to GCR
         run: |
+          gcloud auth print-identity-token
           gcloud auth --project=${GCP_PROJECT} configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
-          gcloud auth list
 
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
