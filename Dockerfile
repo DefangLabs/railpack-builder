@@ -39,4 +39,4 @@ ENV PATH="/usr/bin:$PATH"
 
 ARG RAILPACK_VERSION
 ENV RAILPACK_VERSION=${RAILPACK_VERSION}
-RUN curl -sSL https://railpack.com/install.sh | bash
+RUN curl -fsSL https://railpack.com/install.sh | bash
