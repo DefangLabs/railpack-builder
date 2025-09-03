@@ -4,10 +4,6 @@ on:
   push:
     branches: ["main"]
 
-env:
-  BUILD_ARGS: |
-    RAILPACK_VERSION=0.4.0
-
 jobs:
   build-arm:
     runs-on: ubuntu-24.04-arm
@@ -18,7 +14,6 @@ jobs:
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
         with:
-          build-args: ${{ env.BUILD_ARGS }}
           file: Dockerfile
           platforms: linux/arm64
           push: false
@@ -84,7 +79,6 @@ jobs:
       - name: Build and push multi-arch Docker image
         uses: docker/build-push-action@v6
         with:
-          build-args: ${{ env.BUILD_ARGS }}
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
