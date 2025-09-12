@@ -34,6 +34,9 @@ RUN apt-get -y install \
 RUN mkdir -p /root/.docker && \
     echo '{"credsStore": "ecr-login"}' > /root/.docker/config.json
 
+# Make a symlink for dockerd so it can be found by codebuild
+RUN ln -s /usr/bin/dockerd /usr/local/bin/dockerd
+
 # Add amazon-ecr-credential-helper to PATH
 ENV PATH="/usr/bin:$PATH"
 
