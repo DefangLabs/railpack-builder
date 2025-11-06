@@ -6,6 +6,7 @@ RUN apt-get -y update && \
     apt-transport-https \
     ca-certificates \
     curl \
+    jq \
     make \
     software-properties-common && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
